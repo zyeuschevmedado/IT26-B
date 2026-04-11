@@ -51,7 +51,7 @@ public class LOGINFORM extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jlbemail = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        jPasswordField1 = new javax.swing.JPasswordField();
+        passwordField = new javax.swing.JPasswordField();
         log = new javax.swing.JButton();
         SIGN = new javax.swing.JButton();
 
@@ -69,7 +69,7 @@ public class LOGINFORM extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Serif", 0, 14)); // NOI18N
         jLabel2.setText("Password:");
 
-        jPasswordField1.setFont(new java.awt.Font("Serif", 0, 14)); // NOI18N
+        passwordField.setFont(new java.awt.Font("Serif", 0, 14)); // NOI18N
 
         log.setText("Login");
         log.addActionListener(this::logActionPerformed);
@@ -92,7 +92,7 @@ public class LOGINFORM extends javax.swing.JFrame {
                         .addGap(29, 29, 29)
                         .addComponent(SIGN))
                     .addComponent(jlbemail, javax.swing.GroupLayout.DEFAULT_SIZE, 201, Short.MAX_VALUE)
-                    .addComponent(jPasswordField1))
+                    .addComponent(passwordField))
                 .addContainerGap(61, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -105,7 +105,7 @@ public class LOGINFORM extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(log)
@@ -153,45 +153,56 @@ public class LOGINFORM extends javax.swing.JFrame {
 
     private void logActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logActionPerformed
 
-     Connection con = DBConnection.getConnection();
+        try {
 
-if (con == null) {
-    JOptionPane.showMessageDialog(this, "Database connection failed");
-    return;
-}
+            Connection con = DBConnection.getConnection();
 
-try {
-    String sql = "SELECT * FROM users WHERE email=? AND password=?";
-    PreparedStatement ps = con.prepareStatement(sql);
+            if (con == null) {
+                JOptionPane.showMessageDialog(this, "Database not connected!");
+                return;
+            }
 
-    String email = jlbemail.getText();
-    String password = String.valueOf(jPasswordField1.getPassword());
+            String sql = "SELECT * FROM users WHERE email=? AND password=?";
+            PreparedStatement ps = con.prepareStatement(sql);
 
-    ps.setString(1, email);
-    ps.setString(2, password);
+            ps.setString(1, jlbemail.getText().trim());
+            ps.setString(2, new String(passwordField.getPassword()).trim());
 
-    ResultSet rs = ps.executeQuery();
+            ResultSet rs = ps.executeQuery();
 
-    if (rs.next()) {
+            if (rs.next()) {
 
-        int userId = rs.getInt("id");
-        String role = rs.getString("role");
+                // ===== GET USER DATA =====
+                int userId = rs.getInt("id");
+                String role = rs.getString("role");
+                String username = rs.getString("username");
 
-        if (role.equalsIgnoreCase("admin")) {
-            new AdminDashboard().setVisible(true);
-        } else {
-            new UserDashboad(userId).setVisible(true);
+                JOptionPane.showMessageDialog(this, "Login Successful!");
+
+                // ===== REDIRECT BASED ON ROLE =====
+                if (role.equalsIgnoreCase("admin")) {
+
+                    // 👑 ADMIN DASHBOARD
+                    AdminDashboard admin = new AdminDashboard();
+                    admin.setVisible(true);
+
+                } else {
+
+                    // 👤 USER DASHBOARD (ONLY THEIR DATA)
+                    UserDashboad user = new UserDashboad(userId);
+                    user.setVisible(true);
+
+                }
+
+                this.dispose();
+
+            } else {
+                JOptionPane.showMessageDialog(this, "Invalid email or password!");
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
         }
-
-        this.dispose();
-
-    } else {
-        JOptionPane.showMessageDialog(this, "Invalid login");
-    }
-
-} catch (Exception e) {
-    e.printStackTrace();
-}
     }//GEN-LAST:event_logActionPerformed
 
     /**
@@ -225,9 +236,9 @@ try {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPasswordField jPasswordField1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTextField jlbemail;
     private javax.swing.JButton log;
+    private javax.swing.JPasswordField passwordField;
     // End of variables declaration//GEN-END:variables
 }
