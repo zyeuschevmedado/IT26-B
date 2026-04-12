@@ -8,6 +8,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import javax.swing.JOptionPane;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.DocumentFilter;
 
 public class UserDashboad extends javax.swing.JFrame {
 
@@ -17,45 +19,89 @@ public class UserDashboad extends javax.swing.JFrame {
     private String username;
 
     public UserDashboad(int userId) {
+
         initComponents();
         this.userId = userId;
-        this.username = username;
+        usernname.setEditable(false);
+
+        Add.addActionListener(this::AddActionPerformed);
+        UPDATE.addActionListener(this::UPDATEActionPerformed);
+        DEL.addActionListener(this::DELActionPerformed);
+
+        // TABLE CLICK
+        Studentinfo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                StudentinfoMouseClicked(evt);
+            }
+        });
 
         loadUser();
+        loadStudents();
+    }
+
+    private void setFieldsEditable(boolean flag) {
+        fname.setEditable(flag);
+        uname.setEditable(flag);
+        Email.setEditable(flag);
+        Email1.setEditable(flag);
     }
 
     private void loadUser() {
         try {
+            Connection con = DBConnection.getConnection();
 
-        Connection con = DBConnection.getConnection();
+            String sql = "SELECT * FROM users WHERE id=?";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, userId);
 
-        String sql = "SELECT id, firstname, lastname, username, email, gender FROM users";
-        PreparedStatement ps = con.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
 
-        ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                String username = rs.getString("username");
+                String email = rs.getString("email");
+                String firstname = rs.getString("firstname");
+                String lastname = rs.getString("lastname");
+                String gender = rs.getString("gender"); // ✅ ADD THIS
 
-        DefaultTableModel model = (DefaultTableModel) usersTable.getModel();
-        model.setRowCount(0);
+                usernname.setText(username);
+                uname.setText(username);
+                Email.setText(email);
+                fname.setText(firstname + " " + lastname);
 
-        while (rs.next()) {
-            model.addRow(new Object[]{
-                rs.getInt("id"),
-                rs.getString("firstname"),
-                rs.getString("lastname"),
-                rs.getString("username"),
-                rs.getString("email"),
-                rs.getString("gender")
-            });
+                Email1.setText(gender); // ✅ SHOW GENDER HERE
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error loading user: " + e.getMessage());
         }
-
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, e.getMessage());
-    }
-
     }
 
     public UserDashboad() {
         initComponents();
+        fname.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                lockIfFocusLost();
+            }
+        });
+
+        uname.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                lockIfFocusLost();
+            }
+        });
+
+        Email.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                lockIfFocusLost();
+            }
+        });
+
+        Email1.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                lockIfFocusLost();
+            }
+        });
+
     }
 
     /**
@@ -67,54 +113,329 @@ public class UserDashboad extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jEditorPane1 = new javax.swing.JEditorPane();
         jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
+        userinformation = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
+        usernname = new javax.swing.JTextField();
+        username_welcom1 = new javax.swing.JLabel();
         username_welcom = new javax.swing.JLabel();
+        fname = new javax.swing.JTextField();
+        username_welcom2 = new javax.swing.JLabel();
+        uname = new javax.swing.JTextField();
+        username_welcom3 = new javax.swing.JLabel();
+        Email = new javax.swing.JTextField();
+        username_welcom4 = new javax.swing.JLabel();
+        Email1 = new javax.swing.JTextField();
+        UPDATE1 = new javax.swing.JButton();
+        EDIT = new javax.swing.JButton();
+        jPanel4 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        Studentinfo = new javax.swing.JTable();
+        StudentInput = new javax.swing.JPanel();
+        username_welcom5 = new javax.swing.JLabel();
+        fname1 = new javax.swing.JTextField();
+        yrlv = new javax.swing.JTextField();
+        username_welcom6 = new javax.swing.JLabel();
+        username_welcom7 = new javax.swing.JLabel();
+        cour = new javax.swing.JTextField();
+        username_welcom8 = new javax.swing.JLabel();
+        username_welcom9 = new javax.swing.JLabel();
+        add = new javax.swing.JTextField();
+        Add = new javax.swing.JButton();
+        UPDATE = new javax.swing.JButton();
+        DEL = new javax.swing.JButton();
+        username_welcom10 = new javax.swing.JLabel();
+        add1 = new javax.swing.JTextField();
+        age1 = new javax.swing.JSpinner();
+        logout = new javax.swing.JButton();
+        Admin = new javax.swing.JButton();
+
+        jScrollPane2.setViewportView(jEditorPane1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "User Information", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Serif", 0, 14))); // NOI18N
+        userinformation.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "User Information", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Serif", 0, 14))); // NOI18N
 
         jPanel3.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        username_welcom.setText("WELLCOME");
+        usernname.setFont(new java.awt.Font("Serif", 0, 12)); // NOI18N
+
+        username_welcom1.setFont(new java.awt.Font("Serif", 0, 12)); // NOI18N
+        username_welcom1.setText("WELLCOME");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(username_welcom)
-                .addContainerGap(60, Short.MAX_VALUE))
+                .addGap(85, 85, 85)
+                .addComponent(usernname, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
+                .addContainerGap())
+            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel3Layout.createSequentialGroup()
+                    .addGap(16, 16, 16)
+                    .addComponent(username_welcom1)
+                    .addContainerGap(128, Short.MAX_VALUE)))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(username_welcom)
+                .addComponent(usernname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel3Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(username_welcom1)
+                    .addContainerGap(16, Short.MAX_VALUE)))
+        );
+
+        username_welcom.setFont(new java.awt.Font("Serif", 0, 14)); // NOI18N
+        username_welcom.setText("Full Name:");
+
+        fname.setFont(new java.awt.Font("Serif", 0, 14)); // NOI18N
+
+        username_welcom2.setFont(new java.awt.Font("Serif", 0, 14)); // NOI18N
+        username_welcom2.setText("User Name:");
+
+        uname.setFont(new java.awt.Font("Serif", 0, 14)); // NOI18N
+
+        username_welcom3.setFont(new java.awt.Font("Serif", 0, 14)); // NOI18N
+        username_welcom3.setText("E-mail:");
+
+        Email.setFont(new java.awt.Font("Serif", 0, 14)); // NOI18N
+
+        username_welcom4.setFont(new java.awt.Font("Serif", 0, 14)); // NOI18N
+        username_welcom4.setText("Gender");
+
+        Email1.setFont(new java.awt.Font("Serif", 0, 14)); // NOI18N
+        Email1.addActionListener(this::Email1ActionPerformed);
+
+        UPDATE1.setFont(new java.awt.Font("Serif", 0, 12)); // NOI18N
+        UPDATE1.setText("UPDATE");
+        UPDATE1.addActionListener(this::UPDATE1ActionPerformed);
+
+        EDIT.setFont(new java.awt.Font("Serif", 0, 12)); // NOI18N
+        EDIT.setText("EDIT");
+        EDIT.addActionListener(this::EDITActionPerformed);
+
+        javax.swing.GroupLayout userinformationLayout = new javax.swing.GroupLayout(userinformation);
+        userinformation.setLayout(userinformationLayout);
+        userinformationLayout.setHorizontalGroup(
+            userinformationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(userinformationLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(userinformationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(userinformationLayout.createSequentialGroup()
+                        .addGroup(userinformationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(username_welcom2)
+                            .addComponent(username_welcom)
+                            .addComponent(username_welcom3)
+                            .addComponent(username_welcom4))
+                        .addGap(18, 18, 18)
+                        .addGroup(userinformationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(Email1, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(fname, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(Email, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(uname, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, userinformationLayout.createSequentialGroup()
+                        .addComponent(EDIT)
+                        .addGap(18, 18, 18)
+                        .addComponent(UPDATE1)))
+                .addContainerGap(23, Short.MAX_VALUE))
+        );
+        userinformationLayout.setVerticalGroup(
+            userinformationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(userinformationLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(userinformationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(username_welcom)
+                    .addComponent(fname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(userinformationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(username_welcom2)
+                    .addComponent(uname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(userinformationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(username_welcom3)
+                    .addComponent(Email, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(userinformationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(username_welcom4)
+                    .addComponent(Email1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(userinformationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(UPDATE1)
+                    .addComponent(EDIT))
                 .addContainerGap())
         );
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        jPanel4.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+
+        Studentinfo.setFont(new java.awt.Font("Serif", 0, 12)); // NOI18N
+        Studentinfo.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "User Id", "First Name", "Year Level", "Student Id", "Address", "Course", "Age"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(Studentinfo);
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(383, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 744, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(12, 12, 12)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        StudentInput.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Student Information", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Serif", 0, 18))); // NOI18N
+
+        username_welcom5.setFont(new java.awt.Font("Serif", 0, 14)); // NOI18N
+        username_welcom5.setText("Full Name:");
+
+        fname1.setFont(new java.awt.Font("Serif", 0, 14)); // NOI18N
+
+        yrlv.setFont(new java.awt.Font("Serif", 0, 14)); // NOI18N
+
+        username_welcom6.setFont(new java.awt.Font("Serif", 0, 14)); // NOI18N
+        username_welcom6.setText("Year Level:");
+
+        username_welcom7.setFont(new java.awt.Font("Serif", 0, 14)); // NOI18N
+        username_welcom7.setText("Course:");
+
+        cour.setFont(new java.awt.Font("Serif", 0, 14)); // NOI18N
+
+        username_welcom8.setFont(new java.awt.Font("Serif", 0, 14)); // NOI18N
+        username_welcom8.setText("Age:");
+
+        username_welcom9.setFont(new java.awt.Font("Serif", 0, 14)); // NOI18N
+        username_welcom9.setText("Address:");
+
+        add.setFont(new java.awt.Font("Serif", 0, 14)); // NOI18N
+        add.addActionListener(this::addActionPerformed);
+
+        Add.setFont(new java.awt.Font("Serif", 0, 12)); // NOI18N
+        Add.setText("ADD");
+        Add.addActionListener(this::AddActionPerformed);
+
+        UPDATE.setFont(new java.awt.Font("Serif", 0, 12)); // NOI18N
+        UPDATE.setText("UPDATE");
+        UPDATE.addActionListener(this::UPDATEActionPerformed);
+
+        DEL.setFont(new java.awt.Font("Serif", 0, 12)); // NOI18N
+        DEL.setText("DELETE");
+        DEL.addActionListener(this::DELActionPerformed);
+
+        username_welcom10.setFont(new java.awt.Font("Serif", 0, 14)); // NOI18N
+        username_welcom10.setText("Student Id:");
+
+        add1.setFont(new java.awt.Font("Serif", 0, 14)); // NOI18N
+        add1.addActionListener(this::add1ActionPerformed);
+
+        javax.swing.GroupLayout StudentInputLayout = new javax.swing.GroupLayout(StudentInput);
+        StudentInput.setLayout(StudentInputLayout);
+        StudentInputLayout.setHorizontalGroup(
+            StudentInputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(StudentInputLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(168, Short.MAX_VALUE))
+                .addGroup(StudentInputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(StudentInputLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(Add, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(UPDATE, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(DEL, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(StudentInputLayout.createSequentialGroup()
+                        .addGap(13, 13, 13)
+                        .addGroup(StudentInputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(username_welcom5)
+                            .addComponent(username_welcom6)
+                            .addComponent(username_welcom7)
+                            .addComponent(username_welcom8)
+                            .addComponent(username_welcom9)
+                            .addComponent(username_welcom10))
+                        .addGap(51, 51, 51)
+                        .addGroup(StudentInputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(add1, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(cour)
+                            .addComponent(yrlv)
+                            .addComponent(add)
+                            .addGroup(StudentInputLayout.createSequentialGroup()
+                                .addGroup(StudentInputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(fname1, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(age1, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(0, 0, Short.MAX_VALUE)))))
+                .addGap(18, 18, 18))
         );
+        StudentInputLayout.setVerticalGroup(
+            StudentInputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(StudentInputLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(StudentInputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(username_welcom5)
+                    .addComponent(fname1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(StudentInputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(username_welcom6)
+                    .addComponent(yrlv, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(StudentInputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(username_welcom9)
+                    .addComponent(add, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(StudentInputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(username_welcom10)
+                    .addComponent(add1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(StudentInputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(username_welcom7)
+                    .addComponent(cour, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(StudentInputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(username_welcom8)
+                    .addComponent(age1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(StudentInputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(Add)
+                    .addComponent(UPDATE)
+                    .addComponent(DEL))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        logout.setFont(new java.awt.Font("Serif", 0, 12)); // NOI18N
+        logout.setText("Log-out");
+        logout.addActionListener(this::logoutActionPerformed);
+
+        Admin.setFont(new java.awt.Font("Serif", 0, 12)); // NOI18N
+        Admin.setText("Admin");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -122,15 +443,39 @@ public class UserDashboad extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(404, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(userinformation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(StudentInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(logout)
+                            .addComponent(Admin))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(148, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(StudentInput, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(14, 14, 14)
+                                .addComponent(userinformation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(17, 17, 17)
+                                .addComponent(logout)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(Admin)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(9, 9, 9))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -151,7 +496,255 @@ public class UserDashboad extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void loadStudents() {
+        try {
+            Connection con = DBConnection.getConnection();
+            String sql = "SELECT * FROM students";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            javax.swing.table.DefaultTableModel model
+                    = (javax.swing.table.DefaultTableModel) Studentinfo.getModel();
+
+            model.setRowCount(0);
+
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getInt("id"),
+                    rs.getString("fullname"),
+                    rs.getString("year_level"),
+                    rs.getString("student_id"),
+                    rs.getString("address"),
+                    rs.getString("course"),
+                    rs.getInt("age")
+                });
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error loading students: " + e.getMessage());
+        }
+    }
+
+    private void StudentinfoMouseClicked(java.awt.event.MouseEvent evt) {
+        int row = Studentinfo.getSelectedRow();
+
+        fname1.setText(Studentinfo.getValueAt(row, 1).toString());
+        yrlv.setText(Studentinfo.getValueAt(row, 2).toString());
+        add1.setText(Studentinfo.getValueAt(row, 3).toString());
+        add.setText(Studentinfo.getValueAt(row, 4).toString());
+        cour.setText(Studentinfo.getValueAt(row, 5).toString());
+        age1.setValue(Integer.parseInt(Studentinfo.getValueAt(row, 6).toString()));
+    }
+
+    private void autoLock() {
+        javax.swing.Timer timer = new javax.swing.Timer(300, e -> {
+            if (!fname.isFocusOwner()
+                    && !uname.isFocusOwner()
+                    && !Email.isFocusOwner()
+                    && !Email1.isFocusOwner()) {
+
+                setFieldsEditable(false);
+            }
+        });
+        timer.setRepeats(false);
+        timer.start();
+    }
+
+    private void lockIfFocusLost() {
+        if (!fname.isFocusOwner()
+                && !uname.isFocusOwner()
+                && !Email.isFocusOwner()
+                && !Email1.isFocusOwner()) {
+
+            setFieldsEditable(false);
+        }
+    }
+
+    private void clearFields() {
+        fname1.setText("");
+        yrlv.setText("");
+        add.setText("");
+        add1.setText("");
+        cour.setText("");
+        age1.setValue(1);
+    }
+
+    private void Email1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Email1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_Email1ActionPerformed
+
+    private void UPDATE1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UPDATE1ActionPerformed
+        try {
+            Connection con = DBConnection.getConnection();
+
+            int row = Studentinfo.getSelectedRow();
+            int id = Integer.parseInt(Studentinfo.getValueAt(row, 0).toString());
+
+            String sql = "UPDATE students SET fullname=?, yearlevel=?, address=?, student_id=?, course=?, age=? WHERE id=?";
+            PreparedStatement ps = con.prepareStatement(sql);
+
+            ps.setString(1, fname1.getText());
+            ps.setString(2, yrlv.getText());
+            ps.setString(3, add.getText());
+            ps.setString(4, add1.getText());
+            ps.setString(5, cour.getText());
+            ps.setInt(6, Integer.parseInt((String) age1.getValue()));
+            ps.setInt(7, id);
+
+            ps.executeUpdate();
+
+            JOptionPane.showMessageDialog(this, "Student Updated!");
+
+            loadStudents();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+        }
+    }//GEN-LAST:event_UPDATE1ActionPerformed
+
+    private void EDITActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EDITActionPerformed
+        setFieldsEditable(true);
+    }//GEN-LAST:event_EDITActionPerformed
+
+    private void AddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddActionPerformed
+
+        try {
+
+            String fullname = fname1.getText().trim();
+            String year = yrlv.getText().trim();
+            String address = add.getText().trim();
+            String studentId = add1.getText().trim();
+            String course = cour.getText().trim();
+            int age = (int) age1.getValue();
+
+            if (fullname.isEmpty() || year.isEmpty() || address.isEmpty()
+                    || studentId.isEmpty() || course.isEmpty()) {
+
+                JOptionPane.showMessageDialog(this, "Please fill all fields!");
+                return;
+            }
+
+            if (age <= 0) {
+                JOptionPane.showMessageDialog(this, "Invalid age!");
+                return;
+            }
+
+            Connection con = DBConnection.getConnection();
+            String sql = "UPDATE students SET fullname=?, year_level=?, address=?, student_id=?, course=?, age=? WHERE id=?";
+
+            PreparedStatement ps = con.prepareStatement(sql);
+
+            ps.setInt(1, userId);
+            ps.setString(2, fullname);
+            ps.setString(3, year);
+            ps.setString(4, address);
+            ps.setString(5, studentId);
+            ps.setString(6, course);
+            ps.setInt(7, age);
+
+            ps.executeUpdate();
+
+            JOptionPane.showMessageDialog(this, "Student Added!");
+
+            loadStudents();
+            clearFields();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+        }
+
+    }//GEN-LAST:event_AddActionPerformed
+
+    private void DELActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DELActionPerformed
+        try {
+            int row = Studentinfo.getSelectedRow();
+
+            if (row == -1) {
+                JOptionPane.showMessageDialog(this, "Please select a student to delete!");
+                return;
+            }
+
+            int id = Integer.parseInt(Studentinfo.getValueAt(row, 0).toString());
+
+            Connection con = DBConnection.getConnection();
+
+            String sql = "DELETE FROM students WHERE id=?";
+            PreparedStatement ps = con.prepareStatement(sql);
+
+            ps.setInt(1, id);
+
+            ps.executeUpdate();
+
+            JOptionPane.showMessageDialog(this, "Student Deleted!");
+
+            loadStudents();
+            clearFields();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+        }
+    }//GEN-LAST:event_DELActionPerformed
+
+    private void UPDATEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UPDATEActionPerformed
+
+        try {
+            int row = Studentinfo.getSelectedRow();
+
+            // ✅ CHECK if no row selected
+            if (row == -1) {
+                JOptionPane.showMessageDialog(this, "Please select a student to update!");
+                return;
+            }
+
+            Connection con = DBConnection.getConnection();
+
+            int id = Integer.parseInt(Studentinfo.getValueAt(row, 0).toString());
+
+            String sql = "UPDATE students SET fullname=?, year_level=?, address=?, student_id=?, course=?, age=? WHERE id=?";
+            PreparedStatement ps = con.prepareStatement(sql);
+
+            ps.setString(1, fname1.getText());
+            ps.setString(2, yrlv.getText());
+            ps.setString(3, add.getText());
+            ps.setString(4, add1.getText());
+            ps.setString(5, cour.getText());
+            ps.setInt(6, Integer.parseInt((String) age1.getValue()));
+            ps.setInt(7, id);
+
+            ps.executeUpdate();
+
+            JOptionPane.showMessageDialog(this, "Student Updated!");
+
+            loadStudents(); // refresh table
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+        }
+    }//GEN-LAST:event_UPDATEActionPerformed
+
+    private void addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_addActionPerformed
+
+    private void add1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_add1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_add1ActionPerformed
+
+    private void logoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutActionPerformed
+
+        int choice = JOptionPane.showConfirmDialog(
+                this,
+                "Are you sure you want to logout?",
+                "Logout",
+                JOptionPane.YES_NO_OPTION
+        );
+        if (choice == JOptionPane.YES_OPTION) {
+            this.dispose(); 
+        }
+    }//GEN-LAST:event_logoutActionPerformed
 
     /**
      * @param args the command line arguments
@@ -179,9 +772,43 @@ public class UserDashboad extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton Add;
+    private javax.swing.JButton Admin;
+    private javax.swing.JButton DEL;
+    private javax.swing.JButton EDIT;
+    private javax.swing.JTextField Email;
+    private javax.swing.JTextField Email1;
+    private javax.swing.JPanel StudentInput;
+    private javax.swing.JTable Studentinfo;
+    private javax.swing.JButton UPDATE;
+    private javax.swing.JButton UPDATE1;
+    private javax.swing.JTextField add;
+    private javax.swing.JTextField add1;
+    private javax.swing.JSpinner age1;
+    private javax.swing.JTextField cour;
+    private javax.swing.JTextField fname;
+    private javax.swing.JTextField fname1;
+    private javax.swing.JEditorPane jEditorPane1;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JButton logout;
+    private javax.swing.JTextField uname;
+    private javax.swing.JPanel userinformation;
     private javax.swing.JLabel username_welcom;
+    private javax.swing.JLabel username_welcom1;
+    private javax.swing.JLabel username_welcom10;
+    private javax.swing.JLabel username_welcom2;
+    private javax.swing.JLabel username_welcom3;
+    private javax.swing.JLabel username_welcom4;
+    private javax.swing.JLabel username_welcom5;
+    private javax.swing.JLabel username_welcom6;
+    private javax.swing.JLabel username_welcom7;
+    private javax.swing.JLabel username_welcom8;
+    private javax.swing.JLabel username_welcom9;
+    private javax.swing.JTextField usernname;
+    private javax.swing.JTextField yrlv;
     // End of variables declaration//GEN-END:variables
 }

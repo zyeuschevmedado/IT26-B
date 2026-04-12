@@ -10,18 +10,19 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import javax.swing.JOptionPane;
 
+
 /**
  *
  * @author User
  */
-public class RegisterFrom extends javax.swing.JFrame {
-
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(RegisterFrom.class.getName());
+public class reg extends javax.swing.JFrame {
+    
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(reg.class.getName());
 
     /**
-     * Creates new form RegisterFrom
+     * Creates new form reg
      */
-    public RegisterFrom() {
+    public reg() {
         initComponents();
     }
 
@@ -65,6 +66,7 @@ public class RegisterFrom extends javax.swing.JFrame {
         jLabel1.setText("Name:");
 
         name1.setFont(new java.awt.Font("Serif", 0, 14)); // NOI18N
+        name1.addActionListener(this::name1ActionPerformed);
 
         jLabel2.setFont(new java.awt.Font("Serif", 0, 14)); // NOI18N
         jLabel2.setText("Last Name:");
@@ -246,7 +248,12 @@ public class RegisterFrom extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void name1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_name1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_name1ActionPerformed
 
     private void maleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_maleActionPerformed
         male.setSelected(true);
@@ -259,85 +266,87 @@ public class RegisterFrom extends javax.swing.JFrame {
     }//GEN-LAST:event_fActionPerformed
 
     private void regActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regActionPerformed
-         try {
-        Connection conn = DBConnection.getConnection();
+        try {
+            Connection conn = DBConnection.getConnection();
 
-        if (conn == null) {
-            JOptionPane.showMessageDialog(this, "Database not connected!");
-            return;
-        }
+            if (conn == null) {
+                JOptionPane.showMessageDialog(this, "Database not connected!");
+                return;
+            }
 
-        // GET VALUES
-        String fname = name1.getText().trim();
-        String lname = lastn.getText().trim();
-        String mail = email.getText().trim();
-        String username = email1.getText().trim();
-        String pass1 = new String(passwordField.getPassword()).trim();
-        String pass2 = new String(jPasswordField2.getPassword()).trim();
+            // GET VALUES
+            String fname = name1.getText().trim();
+            String lname = lastn.getText().trim();
+            String mail = email.getText().trim();
+            String username = email1.getText().trim();
+            String pass1 = new String(passwordField.getPassword()).trim();
+            String pass2 = new String(jPasswordField2.getPassword()).trim();
 
-        // VALIDATION
-        if (fname.isEmpty() || lname.isEmpty() || mail.isEmpty()
+            // VALIDATION
+            if (fname.isEmpty() || lname.isEmpty() || mail.isEmpty()
                 || username.isEmpty() || pass1.isEmpty() || pass2.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please fill all fields!");
-            return;
+                JOptionPane.showMessageDialog(this, "Please fill all fields!");
+                return;
+            }
+
+            if (!pass1.equals(pass2)) {
+                JOptionPane.showMessageDialog(this, "Passwords do not match!");
+                return;
+            }
+
+            String gender = male.isSelected() ? "Male" : f.isSelected() ? "Female" : "";
+
+            if (gender.isEmpty()) {
+
+                JOptionPane.showMessageDialog(this, "Select gender!");
+                return;
+            }
+
+            // INSERT USER (THIS IS THE IMPORTANT PART)
+            String sql = "INSERT INTO users(firstname, lastname, username, email, password, gender) VALUES (?, ?, ?, ?, ?, ?)";
+            PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+            ps.setString(1, fname);
+            ps.setString(2, lname);
+            ps.setString(3, username);
+            ps.setString(4, mail);
+            ps.setString(5, pass1);
+            ps.setString(6, gender);
+
+            ps.executeUpdate();
+
+            // GET GENERATED ID
+            ResultSet rs = ps.getGeneratedKeys();
+            int userId = 0;
+            if (rs.next()) {
+                userId = rs.getInt(1);
+            }
+
+            JOptionPane.showMessageDialog(this, "Registered Successfully!");
+
+            // OPEN USER DASHBOARD
+            UserDashboad dash = new UserDashboad(userId);
+            dash.setVisible(true);
+
+            this.dispose();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
         }
-
-        if (!pass1.equals(pass2)) {
-            JOptionPane.showMessageDialog(this, "Passwords do not match!");
-            return;
-        }
-
-        String gender = male.isSelected() ? "Male" : f.isSelected() ? "Female" : "";
-
-        if (gender.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Select gender!");
-            return;
-        }
-
-        // INSERT USER (THIS IS THE IMPORTANT PART)
-        String sql = "INSERT INTO users(firstname, lastname, username, email, password, gender) VALUES (?, ?, ?, ?, ?, ?)";
-        PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-
-        ps.setString(1, fname);
-        ps.setString(2, lname);
-        ps.setString(3, username);
-        ps.setString(4, mail);
-        ps.setString(5, pass1);
-        ps.setString(6, gender);
-
-        ps.executeUpdate();
-
-        // GET GENERATED ID
-        ResultSet rs = ps.getGeneratedKeys();
-        int userId = 0;
-        if (rs.next()) {
-            userId = rs.getInt(1);
-        }
-
-        JOptionPane.showMessageDialog(this, "Registered Successfully!");
-
-        // OPEN USER DASHBOARD
-        UserDashboad dash = new UserDashboad(userId);
-        dash.setVisible(true);
-
-        this.dispose();
-
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
-    }
     }//GEN-LAST:event_regActionPerformed
 
     private void exitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitActionPerformed
         int confirm = JOptionPane.showConfirmDialog(
-                this,
-                "Are you sure you want to exit?",
-                "Exit",
-                javax.swing.JOptionPane.YES_NO_OPTION
+            this,
+            "Are you sure you want to exit?",
+            "Exit",
+            javax.swing.JOptionPane.YES_NO_OPTION
         );
 
         if (confirm == javax.swing.JOptionPane.YES_OPTION) {
             System.exit(0);
         }
+
     }//GEN-LAST:event_exitActionPerformed
 
     /**
@@ -362,7 +371,7 @@ public class RegisterFrom extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new RegisterFrom().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new reg().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
