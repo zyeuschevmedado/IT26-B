@@ -251,20 +251,6 @@ public class reg extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void name1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_name1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_name1ActionPerformed
-
-    private void maleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_maleActionPerformed
-        male.setSelected(true);
-        f.setSelected(false);
-    }//GEN-LAST:event_maleActionPerformed
-
-    private void fActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fActionPerformed
-        f.setSelected(true);
-        male.setSelected(false);
-    }//GEN-LAST:event_fActionPerformed
-
     private void regActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regActionPerformed
         try {
             Connection conn = DBConnection.getConnection();
@@ -348,6 +334,20 @@ public class reg extends javax.swing.JFrame {
         }
 
     }//GEN-LAST:event_exitActionPerformed
+
+    private void fActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fActionPerformed
+        f.setSelected(true);
+        male.setSelected(false);
+    }//GEN-LAST:event_fActionPerformed
+
+    private void maleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_maleActionPerformed
+        male.setSelected(true);
+        f.setSelected(false);
+    }//GEN-LAST:event_maleActionPerformed
+
+    private void name1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_name1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_name1ActionPerformed
 
     /**
      * @param args the command line arguments

@@ -1,4 +1,3 @@
-
 package crud;
 
 import java.sql.Connection;
@@ -7,13 +6,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
-
 public class LOGINFORM extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(LOGINFORM.class.getName());
 
- 
-    
     public LOGINFORM() {
         initComponents();
         GradientPanel bg = new GradientPanel();
@@ -165,36 +161,32 @@ public class LOGINFORM extends javax.swing.JFrame {
 
             if (rs.next()) {
 
-                // ===== GET USER DATA =====
-                int userId = rs.getInt("id");
                 String role = rs.getString("role");
                 String username = rs.getString("username");
 
-                JOptionPane.showMessageDialog(this, "Login Successful!");
-
-                // ===== REDIRECT BASED ON ROLE =====
-                if (role.equalsIgnoreCase("admin")) {
-
-                    // 👑 ADMIN DASHBOARD
-                    AdminDashboard admin = new AdminDashboard();
-                    admin.setVisible(true);
-
-                } else {
-
-                    // 👤 USER DASHBOARD (ONLY THEIR DATA)
-                    UserDashboad user = new UserDashboad(userId);
-                    user.setVisible(true);
-
+                if (role == null) {
+                    role = "user";
                 }
 
-                this.dispose();
+                if (role.equalsIgnoreCase("admin")) {
+
+                    JOptionPane.showMessageDialog(this, "Welcome Admin!");
+
+                    DashB admin = new DashB(role, username); // 👈 IMPORTANT FIX
+                    admin.setVisible(true);
+
+                    this.dispose();
+
+                } else {
+                    JOptionPane.showMessageDialog(this, "Access denied! Admin only.");
+                }
 
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid email or password!");
             }
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, e.toString());
         }
     }//GEN-LAST:event_logActionPerformed
 
