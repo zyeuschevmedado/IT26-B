@@ -311,7 +311,7 @@ public class reg extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Registered Successfully!");
 
             // OPEN USER DASHBOARD
-            UserDashboad dash = new UserDashboad(userId);
+            UserDashboad dash = new UserDashboad(userId, username);
             dash.setVisible(true);
 
             this.dispose();

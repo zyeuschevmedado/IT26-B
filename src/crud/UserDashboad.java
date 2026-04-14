@@ -18,7 +18,7 @@ public class UserDashboad extends javax.swing.JFrame {
     private int userId;
     private String username;
 
-    public UserDashboad(int userId) {
+   public UserDashboad(int userId, String username1) {
 
         initComponents();
         this.userId = userId;
