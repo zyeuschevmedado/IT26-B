@@ -18,7 +18,7 @@ public class UserDashboad extends javax.swing.JFrame {
     private int userId;
     private String username;
 
-   public UserDashboad(int userId, String username1) {
+    public UserDashboad(int userId, String username1) {
 
         initComponents();
         this.userId = userId;
@@ -78,30 +78,23 @@ public class UserDashboad extends javax.swing.JFrame {
 
     public UserDashboad() {
         initComponents();
-        fname.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                lockIfFocusLost();
+        this.userId = userId;
+        this.username = username; // ✅ ADD THIS (VERY IMPORTANT)
+
+        usernname.setEditable(false);
+
+        Add.addActionListener(this::AddActionPerformed);
+        UPDATE.addActionListener(this::UPDATEActionPerformed);
+        DEL.addActionListener(this::DELActionPerformed);
+
+        Studentinfo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                StudentinfoMouseClicked(evt);
             }
         });
 
-        uname.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                lockIfFocusLost();
-            }
-        });
-
-        Email.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                lockIfFocusLost();
-            }
-        });
-
-        Email1.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                lockIfFocusLost();
-            }
-        });
-
+        loadUser();
+        loadStudents();
     }
 
     /**
@@ -502,8 +495,11 @@ public class UserDashboad extends javax.swing.JFrame {
     private void loadStudents() {
         try {
             Connection con = DBConnection.getConnection();
-            String sql = "SELECT * FROM students";
+
+            String sql = "SELECT * FROM students WHERE user_id=?";
             PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, userId);
+
             ResultSet rs = ps.executeQuery();
 
             javax.swing.table.DefaultTableModel model
@@ -612,7 +608,6 @@ public class UserDashboad extends javax.swing.JFrame {
     private void AddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddActionPerformed
 
         try {
-
             String fullname = fname1.getText().trim();
             String year = yrlv.getText().trim();
             String address = add.getText().trim();
@@ -623,33 +618,34 @@ public class UserDashboad extends javax.swing.JFrame {
             if (fullname.isEmpty() || year.isEmpty() || address.isEmpty()
                     || studentId.isEmpty() || course.isEmpty()) {
 
-                JOptionPane.showMessageDialog(this, "Please fill all fields!");
-                return;
-            }
+                JOptionPane.showMessageDialog(this,
+                        "Please fill all fields!",
+                        "Warning",
+                        JOptionPane.WARNING_MESSAGE);
 
-            if (age <= 0) {
-                JOptionPane.showMessageDialog(this, "Invalid age!");
                 return;
             }
 
             Connection con = DBConnection.getConnection();
-            String sql = "UPDATE students SET fullname=?, year_level=?, address=?, student_id=?, course=?, age=? WHERE id=?";
+
+            String sql = "INSERT INTO students (fullname, year_level, address, student_id, course, age, user_id) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
             PreparedStatement ps = con.prepareStatement(sql);
 
-            ps.setInt(1, userId);
-            ps.setString(2, fullname);
-            ps.setString(3, year);
-            ps.setString(4, address);
-            ps.setString(5, studentId);
-            ps.setString(6, course);
-            ps.setInt(7, age);
+            ps.setString(1, fullname);
+            ps.setString(2, year);
+            ps.setString(3, address);
+            ps.setString(4, studentId);
+            ps.setString(5, course);
+            ps.setInt(6, age);
+            ps.setInt(7, userId); // IMPORTANT: link to logged-in user
 
             ps.executeUpdate();
 
             JOptionPane.showMessageDialog(this, "Student Added!");
 
-            loadStudents();
+            loadStudents(); // refresh table
             clearFields();
 
         } catch (Exception e) {
@@ -742,7 +738,7 @@ public class UserDashboad extends javax.swing.JFrame {
                 JOptionPane.YES_NO_OPTION
         );
         if (choice == JOptionPane.YES_OPTION) {
-            this.dispose(); 
+            this.dispose();
         }
     }//GEN-LAST:event_logoutActionPerformed
 
