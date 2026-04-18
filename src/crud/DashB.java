@@ -4,19 +4,197 @@
  */
 package crud;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author User
  */
 public class DashB extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DashB.class.getName());
 
     /**
      * Creates new form DashB
      */
-    public DashB() {
+    public DashB(String role, String username) {
         initComponents();
+
+        jTable2.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+
+                if (evt.getClickCount() == 2) {
+
+                    int row = jTable2.rowAtPoint(evt.getPoint());
+
+                    if (row == -1) {
+                        return;
+                    }
+
+                    int id = (int) jTable2.getValueAt(row, 0);
+
+                    int confirm = JOptionPane.showConfirmDialog(
+                            null,
+                            "Do you want to delete this entire row?",
+                            "Confirm Delete",
+                            JOptionPane.YES_NO_OPTION
+                    );
+
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        deleteRow(id, row);
+                    }
+                }
+            }
+        });
+        if (!role.equalsIgnoreCase("admin")) {
+            JOptionPane.showMessageDialog(this, "Access denied!");
+            this.dispose();
+            return;
+        }
+        // 👇 THIS IS WHERE YOU PUT IT
+        jTextField1.setText(username);
+
+        loadData();
+        addEditListener();
+
+    }
+
+    private void deleteRow(int id, int row) {
+
+        try {
+            Connection con = DBConnection.getConnection();
+
+            String sql = "DELETE FROM users WHERE id=?";
+            PreparedStatement ps = con.prepareStatement(sql);
+
+            ps.setInt(1, id);
+            ps.executeUpdate();
+
+            // remove from JTable
+            javax.swing.table.DefaultTableModel model
+                    = (javax.swing.table.DefaultTableModel) jTable2.getModel();
+
+            model.removeRow(row);
+
+            JOptionPane.showMessageDialog(this, "Row deleted successfully!");
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
+    }
+
+    private void loadData() {
+
+        try {
+            Connection con = DBConnection.getConnection();
+
+            System.out.println("DB: " + con); // DEBUG
+
+            PreparedStatement ps1 = con.prepareStatement("SELECT * FROM users");
+            ResultSet rs1 = ps1.executeQuery();
+
+            var model1 = (javax.swing.table.DefaultTableModel) jTable2.getModel();
+            model1.setRowCount(0);
+
+            int count = 0;
+
+            while (rs1.next()) {
+                count++;
+
+                model1.addRow(new Object[]{
+                    rs1.getInt("id"),
+                    rs1.getString("firstname"),
+                    rs1.getString("lastname"),
+                    rs1.getString("username"),
+                    rs1.getString("email"),
+                    rs1.getString("password"),
+                    rs1.getString("gender"),
+                    rs1.getString("role")
+                });
+            }
+
+            System.out.println("Rows loaded: " + count);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, e.toString());
+        }
+
+    }
+
+    private void addEditListener() {
+
+        jTable2.getModel().addTableModelListener(e -> {
+
+            if (e.getType() == javax.swing.event.TableModelEvent.UPDATE) {
+
+                int row = e.getFirstRow();
+                int col = e.getColumn();
+
+                if (col == 0) {
+                    return; // prevent editing ID
+                }
+                String columnName = jTable2.getColumnName(col);
+                Object newValue = jTable2.getValueAt(row, col);
+
+                int id = Integer.parseInt(jTable2.getValueAt(row, 0).toString());
+
+                String dbColumn;
+
+                switch (columnName) {
+                    case "First Name":
+                        dbColumn = "firstname";
+                        break;
+                    case "Last Name":
+                        dbColumn = "lastname";
+                        break;
+                    case "User Name":
+                        dbColumn = "username";
+                        break;
+                    case "E-mail":
+                        dbColumn = "email";
+                        break;
+                    case "Password":
+                        dbColumn = "password";
+                        break;
+                    case "Gender":
+                        dbColumn = "gender";
+                        break;
+                    case "Role":
+                        dbColumn = "role";
+                        break;
+                    default:
+                        return;
+                }
+
+                try {
+                    Connection con = DBConnection.getConnection();
+
+                    String sql = "UPDATE users SET " + dbColumn + "=? WHERE id=?";
+                    PreparedStatement ps = con.prepareStatement(sql);
+
+                    ps.setObject(1, newValue);
+                    ps.setInt(2, id);
+
+                    ps.executeUpdate();
+
+                    JOptionPane.showMessageDialog(this, "Updated successfully!");
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, ex.getMessage());
+                }
+            }
+        });
+
+    }
+
+    public void setAdminName(String username) {
+        jTextField1.setText(username);
     }
 
     /**
@@ -28,21 +206,132 @@ public class DashB extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
+        adminname = new javax.swing.JPanel();
+        jTabbedPane2 = new javax.swing.JTabbedPane();
+        jPanel11 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTable2 = new javax.swing.JTable();
+        jPanel2 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        Studentinfo = new javax.swing.JTable();
+        jLabel1 = new javax.swing.JLabel();
+        jTextField1 = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.MatteBorder(null), "User Management System", javax.swing.border.TitledBorder.LEADING, javax.swing.border.TitledBorder.TOP));
+        adminname.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.MatteBorder(null), "User Management System", javax.swing.border.TitledBorder.LEADING, javax.swing.border.TitledBorder.TOP));
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 697, Short.MAX_VALUE)
+        jTabbedPane2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        jTable2.setFont(new java.awt.Font("Serif", 0, 14)); // NOI18N
+        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Id", "First Name", "Last Name", "User Name", "E-mail", "Password", "Gender", "Role"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, true, true, false, false, false, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane2.setViewportView(jTable2);
+
+        javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(jPanel11);
+        jPanel11.setLayout(jPanel11Layout);
+        jPanel11Layout.setHorizontalGroup(
+            jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 974, Short.MAX_VALUE)
+            .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel11Layout.createSequentialGroup()
+                    .addGap(8, 8, 8)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 958, Short.MAX_VALUE)
+                    .addGap(8, 8, 8)))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 340, Short.MAX_VALUE)
+        jPanel11Layout.setVerticalGroup(
+            jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 440, Short.MAX_VALUE)
+            .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel11Layout.createSequentialGroup()
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(189, 189, 189)))
+        );
+
+        jTabbedPane2.addTab("User Accounts", jPanel11);
+
+        Studentinfo.setFont(new java.awt.Font("Serif", 0, 12)); // NOI18N
+        Studentinfo.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "User Id", "First Name", "Year Level", "Student Id", "Address", "Course", "Age"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(Studentinfo);
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 962, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 11, Short.MAX_VALUE))
+        );
+
+        jTabbedPane2.addTab("Student Informations", jPanel2);
+
+        jLabel1.setText("Welcome Amin!");
+
+        jTextField1.setFont(new java.awt.Font("Serif", 0, 14)); // NOI18N
+        jTextField1.addActionListener(this::jTextField1ActionPerformed);
+
+        javax.swing.GroupLayout adminnameLayout = new javax.swing.GroupLayout(adminname);
+        adminname.setLayout(adminnameLayout);
+        adminnameLayout.setHorizontalGroup(
+            adminnameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(adminnameLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jTabbedPane2)
+                .addContainerGap())
+            .addGroup(adminnameLayout.createSequentialGroup()
+                .addGap(14, 14, 14)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        adminnameLayout.setVerticalGroup(
+            adminnameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, adminnameLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(adminnameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 293, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -51,23 +340,24 @@ public class DashB extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(adminname, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(adminname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * @param args the command line arguments
-     */
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField1ActionPerformed
+
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -87,10 +377,21 @@ public class DashB extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new DashB().setVisible(true));
+        java.awt.EventQueue.invokeLater(()
+                -> new DashB("admin", "AdminName").setVisible(true)
+        );
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JTable Studentinfo;
+    private javax.swing.JPanel adminname;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanel11;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTabbedPane jTabbedPane2;
+    private javax.swing.JTable jTable2;
+    private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 }
