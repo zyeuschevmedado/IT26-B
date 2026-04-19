@@ -503,7 +503,8 @@ public class DashB extends javax.swing.JFrame {
                 JOptionPane.YES_NO_OPTION
         );
         if (choice == JOptionPane.YES_OPTION) {
-            this.dispose();
+            new LOGINFORM().setVisible(true);  // Open login form
+            this.dispose();                    // Close admin dashboard
         }
     }//GEN-LAST:event_logoutActionPerformed
 
