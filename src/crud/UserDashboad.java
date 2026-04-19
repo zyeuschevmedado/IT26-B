@@ -129,6 +129,7 @@ import javax.swing.text.DocumentFilter;
         jScrollPane2.setViewportView(jEditorPane1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("USER DASHBOARD");
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
