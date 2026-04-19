@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
 /**
@@ -23,6 +24,9 @@ public class DashB extends javax.swing.JFrame {
      */
     public DashB(String role, String username) {
         initComponents();
+        jTextField1.setEditable(false);
+        jTextField1.setEnabled(false);
+        jTextField1.setBackground(javax.swing.UIManager.getColor("Panel.background"));
 
         jTable2.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -51,17 +55,102 @@ public class DashB extends javax.swing.JFrame {
                 }
             }
         });
+        Studentinfo.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                if (evt.getClickCount() == 2) {
+                    int row = Studentinfo.rowAtPoint(evt.getPoint());
+                    if (row == -1) {
+                        return;
+                    }
+                    int id = (int) Studentinfo.getValueAt(row, 0);
+                    int confirm = JOptionPane.showConfirmDialog(
+                            null,
+                            "Do you want to delete this student?",
+                            "Confirm Delete",
+                            JOptionPane.YES_NO_OPTION
+                    );
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        deleteStudentRow(id, row);
+                    }
+                }
+            }
+        });
+
         if (!role.equalsIgnoreCase("admin")) {
             JOptionPane.showMessageDialog(this, "Access denied!");
             this.dispose();
             return;
         }
-        // 👇 THIS IS WHERE YOU PUT IT
+
         jTextField1.setText(username);
         loadStudents();
         loadData();
         addEditListener();
 
+        // Add the Add Student button to the panel
+        setupAddStudentButton();
+    }
+
+    private void deleteStudentRow(int id, int row) {
+        try {
+            Connection con = DBConnection.getConnection();
+
+            String sql = "DELETE FROM students WHERE id=?";
+            PreparedStatement ps = con.prepareStatement(sql);
+
+            ps.setInt(1, id);
+            ps.executeUpdate();
+
+            // remove from JTable
+            javax.swing.table.DefaultTableModel model
+                    = (javax.swing.table.DefaultTableModel) Studentinfo.getModel();
+
+            model.removeRow(row);
+
+            JOptionPane.showMessageDialog(this, "Student deleted successfully!");
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error deleting student: " + e.getMessage());
+        }
+    }
+
+    private void loadStudents() {
+        try {
+            Connection con = DBConnection.getConnection();
+
+            String sql = "SELECT * FROM students";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            javax.swing.table.DefaultTableModel model
+                    = (javax.swing.table.DefaultTableModel) Studentinfo.getModel();
+
+            model.setRowCount(0);
+
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getInt("id"),
+                    rs.getString("fullname"),
+                    rs.getString("year_level"),
+                    rs.getString("student_id"),
+                    rs.getString("address"),
+                    rs.getString("course"),
+                    rs.getInt("age")
+                });
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error loading students: " + e.getMessage());
+        }
+    }
+
+    private void setupAddStudentButton() {
+        JButton addStudentBtn = new JButton("Add Student");
+        addStudentBtn.addActionListener(this::addStudentActionPerformed);
+        jPanel2.add(addStudentBtn);
+        jPanel2.revalidate();
+        jPanel2.repaint();
     }
 
     private void deleteRow(int id, int row) {
@@ -109,33 +198,54 @@ public class DashB extends javax.swing.JFrame {
 
     }
 
-    private void loadStudents() {
+    private void addStudentActionPerformed(java.awt.event.ActionEvent evt) {
+        // Create a dialog to add student
+        String fullname = JOptionPane.showInputDialog(this, "Enter Full Name:");
+        if (fullname == null) {
+            return;
+        }
+
+        String yearLevel = JOptionPane.showInputDialog(this, "Enter Year Level:");
+        if (yearLevel == null) {
+            return;
+        }
+
+        String studentId = JOptionPane.showInputDialog(this, "Enter Student ID:");
+        if (studentId == null) {
+            return;
+        }
+
+        String address = JOptionPane.showInputDialog(this, "Enter Address:");
+        if (address == null) {
+            return;
+        }
+
+        String course = JOptionPane.showInputDialog(this, "Enter Course:");
+        if (course == null) {
+            return;
+        }
+
+        String age = JOptionPane.showInputDialog(this, "Enter Age:");
+        if (age == null) {
+            return;
+        }
+
         try {
             Connection con = DBConnection.getConnection();
-
-            String sql = "SELECT * FROM students";
+            String sql = "INSERT INTO students (fullname, year_level, student_id, address, course, age) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement ps = con.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
+            ps.setString(1, fullname);
+            ps.setString(2, yearLevel);
+            ps.setString(3, studentId);
+            ps.setString(4, address);
+            ps.setString(5, course);
+            ps.setInt(6, Integer.parseInt(age));
+            ps.executeUpdate();
 
-            javax.swing.table.DefaultTableModel model
-                    = (javax.swing.table.DefaultTableModel) Studentinfo.getModel();
-
-            model.setRowCount(0);
-
-            while (rs.next()) {
-                model.addRow(new Object[]{
-                    rs.getInt("user_id"), // matches your table column
-                    rs.getString("fullname"),
-                    rs.getString("year_level"),
-                    rs.getString("student_id"),
-                    rs.getString("address"),
-                    rs.getString("course"),
-                    rs.getInt("age")
-                });
-            }
-
+            JOptionPane.showMessageDialog(this, "Student Added!");
+            loadStudents(); // Refresh table
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error loading students: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
         }
     }
 
@@ -209,6 +319,7 @@ public class DashB extends javax.swing.JFrame {
         jTextField1.setText(username);
     }
 
+    // DELETE THIS ENTIRE METHOD FROM DashB
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -364,6 +475,7 @@ public class DashB extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed

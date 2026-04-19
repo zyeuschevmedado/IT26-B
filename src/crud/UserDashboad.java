@@ -25,6 +25,7 @@ import javax.swing.text.DocumentFilter;
             initComponents();
             this.userId = userId;
             usernname.setEditable(false);
+            usernname.setFocusable(false);
 
             Add.addActionListener(this::AddActionPerformed);
             UPDATE.addActionListener(this::UPDATEActionPerformed);
@@ -124,7 +125,6 @@ import javax.swing.text.DocumentFilter;
         add1 = new javax.swing.JTextField();
         age1 = new javax.swing.JSpinner();
         logout = new javax.swing.JButton();
-        Admin = new javax.swing.JButton();
 
         jScrollPane2.setViewportView(jEditorPane1);
 
@@ -408,9 +408,6 @@ import javax.swing.text.DocumentFilter;
         logout.setText("Log-out");
         logout.addActionListener(this::logoutActionPerformed);
 
-        Admin.setFont(new java.awt.Font("Serif", 0, 12)); // NOI18N
-        Admin.setText("Admin");
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -424,9 +421,7 @@ import javax.swing.text.DocumentFilter;
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(StudentInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(logout)
-                            .addComponent(Admin))))
+                        .addComponent(logout)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -443,9 +438,7 @@ import javax.swing.text.DocumentFilter;
                                 .addComponent(userinformation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(17, 17, 17)
-                                .addComponent(logout)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(Admin)))
+                                .addComponent(logout)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -752,7 +745,6 @@ import javax.swing.text.DocumentFilter;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Add;
-    private javax.swing.JButton Admin;
     private javax.swing.JButton DEL;
     private javax.swing.JButton EDIT;
     private javax.swing.JTextField Email;
