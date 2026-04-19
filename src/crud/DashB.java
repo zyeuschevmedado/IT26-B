@@ -58,7 +58,7 @@ public class DashB extends javax.swing.JFrame {
         }
         // 👇 THIS IS WHERE YOU PUT IT
         jTextField1.setText(username);
-
+        loadStudents();
         loadData();
         addEditListener();
 
@@ -89,42 +89,54 @@ public class DashB extends javax.swing.JFrame {
     }
 
     private void loadData() {
-
         try {
             Connection con = DBConnection.getConnection();
-
-            System.out.println("DB: " + con); // DEBUG
-
+            System.out.println("DB: " + con);
             PreparedStatement ps1 = con.prepareStatement("SELECT * FROM users");
             ResultSet rs1 = ps1.executeQuery();
-
             var model1 = (javax.swing.table.DefaultTableModel) jTable2.getModel();
             model1.setRowCount(0);
-
             int count = 0;
-
             while (rs1.next()) {
                 count++;
-
-                model1.addRow(new Object[]{
-                    rs1.getInt("id"),
-                    rs1.getString("firstname"),
-                    rs1.getString("lastname"),
-                    rs1.getString("username"),
-                    rs1.getString("email"),
-                    rs1.getString("password"),
-                    rs1.getString("gender"),
-                    rs1.getString("role")
-                });
+                model1.addRow(new Object[]{rs1.getInt("id"), rs1.getString("firstname"), rs1.getString("lastname"), rs1.getString("username"), rs1.getString("email"), rs1.getString("password"), rs1.getString("gender"), rs1.getString("role")});
             }
-
             System.out.println("Rows loaded: " + count);
-
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, e.toString());
         }
 
+    }
+
+    private void loadStudents() {
+        try {
+            Connection con = DBConnection.getConnection();
+
+            String sql = "SELECT * FROM students";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            javax.swing.table.DefaultTableModel model
+                    = (javax.swing.table.DefaultTableModel) Studentinfo.getModel();
+
+            model.setRowCount(0);
+
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getInt("user_id"), // matches your table column
+                    rs.getString("fullname"),
+                    rs.getString("year_level"),
+                    rs.getString("student_id"),
+                    rs.getString("address"),
+                    rs.getString("course"),
+                    rs.getInt("age")
+                });
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error loading students: " + e.getMessage());
+        }
     }
 
     private void addEditListener() {

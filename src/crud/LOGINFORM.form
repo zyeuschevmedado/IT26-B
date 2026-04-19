@@ -98,10 +98,8 @@
                               <EmptySpace pref="49" max="32767" attributes="0"/>
                               <Component id="SIGN" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="jlbemail" pref="201" max="32767" attributes="0"/>
-                              <Component id="passwordField" max="32767" attributes="0"/>
-                          </Group>
+                          <Component id="jlbemail" pref="201" max="32767" attributes="0"/>
+                          <Component id="passwordField" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace pref="32" max="32767" attributes="0"/>
                   </Group>

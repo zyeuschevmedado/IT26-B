@@ -11,98 +11,79 @@ import javax.swing.JOptionPane;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.DocumentFilter;
 
-public class UserDashboad extends javax.swing.JFrame {
+  
 
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(UserDashboad.class.getName());
+    public class UserDashboad extends javax.swing.JFrame {
 
-    private int userId;
-    private String username;
+        private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(UserDashboad.class.getName());
 
-    public UserDashboad(int userId, String username1) {
+        private int userId;
+        private String username;
 
-        initComponents();
-        this.userId = userId;
-        usernname.setEditable(false);
+        public UserDashboad(int userId, String username1) {
 
-        Add.addActionListener(this::AddActionPerformed);
-        UPDATE.addActionListener(this::UPDATEActionPerformed);
-        DEL.addActionListener(this::DELActionPerformed);
+            initComponents();
+            this.userId = userId;
+            usernname.setEditable(false);
 
-        // TABLE CLICK
-        Studentinfo.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                StudentinfoMouseClicked(evt);
-            }
-        });
+            Add.addActionListener(this::AddActionPerformed);
+            UPDATE.addActionListener(this::UPDATEActionPerformed);
+            DEL.addActionListener(this::DELActionPerformed);
 
-        loadUser();
-        loadStudents();
-    }
+            // TABLE CLICK
+            Studentinfo.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseClicked(java.awt.event.MouseEvent evt) {
+                    StudentinfoMouseClicked(evt);
+                }
+            });
 
-    private void setFieldsEditable(boolean flag) {
-        fname.setEditable(flag);
-        uname.setEditable(flag);
-        Email.setEditable(flag);
-        Email1.setEditable(flag);
-    }
-
-    private void loadUser() {
-        try {
-            Connection con = DBConnection.getConnection();
-
-            String sql = "SELECT * FROM users WHERE id=?";
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setInt(1, userId);
-
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                String username = rs.getString("username");
-                String email = rs.getString("email");
-                String firstname = rs.getString("firstname");
-                String lastname = rs.getString("lastname");
-                String gender = rs.getString("gender"); // ✅ ADD THIS
-
-                usernname.setText(username);
-                uname.setText(username);
-                Email.setText(email);
-                fname.setText(firstname + " " + lastname);
-
-                Email1.setText(gender); // ✅ SHOW GENDER HERE
-            }
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error loading user: " + e.getMessage());
+            loadUser();
+            loadStudents();
         }
-    }
 
-    public UserDashboad() {
-        initComponents();
-        this.userId = userId;
-        this.username = username; // ✅ ADD THIS (VERY IMPORTANT)
+        private void setFieldsEditable(boolean flag) {
+            fname.setEditable(flag);
+            uname.setEditable(flag);
+            Email.setEditable(flag);
+            Email1.setEditable(flag);
+        }
 
-        usernname.setEditable(false);
+        private void loadUser() {
+            try {
+                Connection con = DBConnection.getConnection();
 
-        Add.addActionListener(this::AddActionPerformed);
-        UPDATE.addActionListener(this::UPDATEActionPerformed);
-        DEL.addActionListener(this::DELActionPerformed);
+                String sql = "SELECT * FROM users WHERE id=?";
+                PreparedStatement ps = con.prepareStatement(sql);
+                ps.setInt(1, userId);
 
-        Studentinfo.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                StudentinfoMouseClicked(evt);
+                ResultSet rs = ps.executeQuery();
+
+                if (rs.next()) {
+                    String username = rs.getString("username");
+                    String email = rs.getString("email");
+                    String firstname = rs.getString("firstname");
+                    String lastname = rs.getString("lastname");
+                    String gender = rs.getString("gender"); // ✅ ADD THIS
+
+                    usernname.setText(username);
+                    uname.setText(username);
+                    Email.setText(email);
+                    fname.setText(firstname + " " + lastname);
+
+                    Email1.setText(gender); // ✅ SHOW GENDER HERE
+                }
+
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Error loading user: " + e.getMessage());
             }
-        });
+        }
 
-        loadUser();
-        loadStudents();
-    }
-
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
+        /**
+         * This method is called from within the constructor to initialize the
+         * form. WARNING: Do NOT modify this code. The content of this method is
+         * always regenerated by the Form Editor.
+         */
+        @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -492,51 +473,64 @@ public class UserDashboad extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void loadStudents() {
-        try {
-            Connection con = DBConnection.getConnection();
+        private void loadStudents() {
+            try {
+                Connection con = DBConnection.getConnection();
 
-            String sql = "SELECT * FROM students WHERE user_id=?";
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setInt(1, userId);
+                String sql = "SELECT * FROM students WHERE user_id=?";
+                PreparedStatement ps = con.prepareStatement(sql);
+                ps.setInt(1, userId);
 
-            ResultSet rs = ps.executeQuery();
+                ResultSet rs = ps.executeQuery();
 
-            javax.swing.table.DefaultTableModel model
-                    = (javax.swing.table.DefaultTableModel) Studentinfo.getModel();
+                javax.swing.table.DefaultTableModel model
+                        = (javax.swing.table.DefaultTableModel) Studentinfo.getModel();
 
-            model.setRowCount(0);
+                model.setRowCount(0);
 
-            while (rs.next()) {
-                model.addRow(new Object[]{
-                    rs.getInt("id"),
-                    rs.getString("fullname"),
-                    rs.getString("year_level"),
-                    rs.getString("student_id"),
-                    rs.getString("address"),
-                    rs.getString("course"),
-                    rs.getInt("age")
-                });
+                while (rs.next()) {
+                    model.addRow(new Object[]{
+                        rs.getInt("id"),
+                        rs.getString("fullname"),
+                        rs.getString("year_level"),
+                        rs.getString("student_id"),
+                        rs.getString("address"),
+                        rs.getString("course"),
+                        rs.getInt("age")
+                    });
+                }
+
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Error loading students: " + e.getMessage());
             }
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error loading students: " + e.getMessage());
         }
-    }
 
-    private void StudentinfoMouseClicked(java.awt.event.MouseEvent evt) {
-        int row = Studentinfo.getSelectedRow();
+        private void StudentinfoMouseClicked(java.awt.event.MouseEvent evt) {
+            int row = Studentinfo.getSelectedRow();
 
-        fname1.setText(Studentinfo.getValueAt(row, 1).toString());
-        yrlv.setText(Studentinfo.getValueAt(row, 2).toString());
-        add1.setText(Studentinfo.getValueAt(row, 3).toString());
-        add.setText(Studentinfo.getValueAt(row, 4).toString());
-        cour.setText(Studentinfo.getValueAt(row, 5).toString());
-        age1.setValue(Integer.parseInt(Studentinfo.getValueAt(row, 6).toString()));
-    }
+            fname1.setText(Studentinfo.getValueAt(row, 1).toString());
+            yrlv.setText(Studentinfo.getValueAt(row, 2).toString());
+            add1.setText(Studentinfo.getValueAt(row, 3).toString());
+            add.setText(Studentinfo.getValueAt(row, 4).toString());
+            cour.setText(Studentinfo.getValueAt(row, 5).toString());
+            age1.setValue(Integer.parseInt(Studentinfo.getValueAt(row, 6).toString()));
+        }
 
-    private void autoLock() {
-        javax.swing.Timer timer = new javax.swing.Timer(300, e -> {
+        private void autoLock() {
+            javax.swing.Timer timer = new javax.swing.Timer(300, e -> {
+                if (!fname.isFocusOwner()
+                        && !uname.isFocusOwner()
+                        && !Email.isFocusOwner()
+                        && !Email1.isFocusOwner()) {
+
+                    setFieldsEditable(false);
+                }
+            });
+            timer.setRepeats(false);
+            timer.start();
+        }
+
+        private void lockIfFocusLost() {
             if (!fname.isFocusOwner()
                     && !uname.isFocusOwner()
                     && !Email.isFocusOwner()
@@ -544,29 +538,16 @@ public class UserDashboad extends javax.swing.JFrame {
 
                 setFieldsEditable(false);
             }
-        });
-        timer.setRepeats(false);
-        timer.start();
-    }
-
-    private void lockIfFocusLost() {
-        if (!fname.isFocusOwner()
-                && !uname.isFocusOwner()
-                && !Email.isFocusOwner()
-                && !Email1.isFocusOwner()) {
-
-            setFieldsEditable(false);
         }
-    }
 
-    private void clearFields() {
-        fname1.setText("");
-        yrlv.setText("");
-        add.setText("");
-        add1.setText("");
-        cour.setText("");
-        age1.setValue(1);
-    }
+        private void clearFields() {
+            fname1.setText("");
+            yrlv.setText("");
+            add.setText("");
+            add1.setText("");
+            cour.setText("");
+            age1.setValue(1);
+        }
 
     private void Email1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Email1ActionPerformed
         // TODO add your handling code here:
@@ -742,29 +723,31 @@ public class UserDashboad extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_logoutActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+        /**
+         * @param args the command line arguments
          */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
+        public static void main(String args[]) {
+            /* Set the Nimbus look and feel */
+            //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+            /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+             */
+            try {
+                for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                    if ("Nimbus".equals(info.getName())) {
+                        javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                        break;
+                    }
                 }
+            } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
+                logger.log(java.util.logging.Level.SEVERE, null, ex);
             }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+            //</editor-fold>
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new UserDashboad().setVisible(true));
+            /* Create and display the form */
+            java.awt.EventQueue.invokeLater(() -> new UserDashboad(1, "test").setVisible(true));
+        
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
